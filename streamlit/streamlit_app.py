@@ -48,7 +48,7 @@ def get_total_flights():
 
 def main():
 
-    st.title('DuckDB Data Viewer')
+    st.title('Flights Dashboard')
     st.metric(label ="Total Flights", value=get_total_flights())
 
     st.subheader("Total Delay by Origin")

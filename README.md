@@ -83,6 +83,8 @@ make run_aws
 
 Access [Streamlite UI](http://localhost:8501/)
 
+![](./imgs/flights_dashboard.jpeg)
+
 ## Querying DB with DuckDB
 Requires [DuckDB binary](https://duckdb.org/docs/installation/?version=stable&environment=cli&platform=linux&download_method=package_manager)
 ```bash

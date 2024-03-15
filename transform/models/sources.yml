@@ -1,0 +1,8 @@
+version: 2
+
+sources:
+  - name: flights_db
+    schema: main
+    tables: 
+      - name: flights_raw
+        description: Reads raw csv file

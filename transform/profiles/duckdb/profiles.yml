@@ -1,0 +1,25 @@
+config:
+  send_anonymous_usage_stats: False
+  use_colors: True
+meltano:
+  target: "{{ env_var('MELTANO_ENVIRONMENT', 'dev') }}"
+  outputs:
+    dev:
+      type: duckdb
+      path: "{{ env_var('DBT_DUCKDB_PATH') }}"
+      threads: 4
+      # extensions:
+      #   - httpfs
+      #   - parquet
+      # settings:
+      #   s3_region: "{{ env_var('MINIO_REGION') }}"
+      #   s3_access_key_id: "{{ env_var('MINIO_ACCESS_KEY_ID') }}"
+      #   s3_secret_access_key: "{{ env_var('MINIO_SECRET_ACCESS_KEY') }}"
+    docker:
+      type: duckdb
+      path: "{{ env_var('DBT_DUCKDB_PATH') }}"
+      threads: 4
+    aws:
+      type: duckdb
+      path: "{{ env_var('DBT_DUCKDB_PATH') }}"
+      threads: 4

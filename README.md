@@ -3,12 +3,21 @@
 ## Meltano - DuckDB - DBT - Minio - Streamlit
 ## Overview
 
-This demo project demonstrates ans end-to-end data pipeline using the modern data stack. Steps are as follow:
+This demo project demonstrates an end-to-end data pipeline using the modern data stack. Steps are as follow:
 
 - Crawls data from an object storage with Meltano
 - Loads data into a warehouse with DuckDB
 - Transforms data and generates semantic model from physical model using DBT
 - Deploys UI data apps with Streamlit
+
+This will populate four DuckDB tables:
+
+- [Landing][flights_raw] Will contain all ingested files including metadata as filename or insertion date
+- [Bronze][flights] Only unique flights will populate this table
+- [Silver][delays] Data related to `delays`
+- [Gold] Contains summarized tables such as `avg_dealys` or `total_delays`
+
+![](./imgs/ddb_tables.jpeg)
 
 This pipeline can run on both environments:
 

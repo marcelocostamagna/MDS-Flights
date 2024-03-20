@@ -42,4 +42,11 @@ run_aws:
 	--entrypoint "/project/entrypoint.sh" \
 	meltano
 
+.PHONY: generate_flights
+generate_flights:
+	@docker compose run \
+	-v $(shell pwd)/apps/flights-generator:/app \
+	--entrypoint "python /app/flights-generator.py" \
+	flights_generator
+
   

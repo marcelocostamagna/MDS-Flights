@@ -15,20 +15,21 @@ services:
     meltano:
       build:
         context: .
-        dockerfile: Dockerfile_meltano
-      container_name: meltano-dev
+        dockerfile: dockerfiles/Dockerfile_meltano
+      image: meltano-dev
       networks:
         - meltano_network
+    
     streamlit:
       build:
         context: .
-        dockerfile: Dockerfile_streamlit
-      container_name: streamlit-dev
+        dockerfile: dockerfiles/Dockerfile_streamlit
+      image: streamlit-dev
       ports:
         - 8501:8501
       command : streamlit run code/streamlit_app.py --server.port=8501 --server.address=0.0.0.0
       volumes:
-        - ./streamlit:/app/code
+        - .apps/streamlit:/app/code
         - ./data/db:/app/db
       healthcheck:
         test: ["CMD", "curl", "--fail", "http://localhost:8501/_stcore/health"]
@@ -39,8 +40,8 @@ services:
       image: minio/minio:latest
       restart: unless-stopped
       ports:
-        - 9090:9000
-        - 9091:9001 # UI
+        - 9090:9000 # 9000 internal docker network
+        - 9091:9001 # UI 9091 external access
       environment:
         MINIO_ROOT_USER: minio
         MINIO_ROOT_PASSWORD: minio123
@@ -75,6 +76,14 @@ services:
         - type: bind
           source: ./data/raw/flights_1.csv
           target: /tmp/flights_1.csv
+      networks:
+        - meltano_network
+
+    flights_generator:
+      build:
+        context: .
+        dockerfile: dockerfiles/Dockerfile_flights_generator
+      image: flights-data-generator
       networks:
         - meltano_network
 

@@ -1,6 +1,6 @@
 /venv
 /.meltano
-/minio
 .meltano
+/minio
 output/
 data/db/

@@ -44,17 +44,27 @@ make down
 
 ## Running e2e pipeline
 ### Environment setup
-1 - Edit `.env` for setting environment variables
+1 - Edit `.env` for setting Meltano environment variables
 ```bash
 cat ./.env
 ```
 
-2 - Specify which file to read from object storage, it must previously exist in source bucket. 
+2 - Option 1: Specify which file to read from object storage, it must previously exist in source bucket. 
 
-*Note*: an example file (flights_1.csv) is loaded in Minio **landing bucket** by default, you can find other example files under `data/raw` to manually upload
+*Note*: an example file (flights_1.csv) is loaded in Minio **landing bucket** by default, you can find other example files under `data/raw` to manually upload them
 
 ```bash
 export SRC_FILE=flights_1.csv
+```
+
+3- Option 2: Generate synthetic flights data
+
+ A python script that will generate and upload flights data every 60 seconds to an object storage
+```bash
+# Edit .env file and define object storage credentials
+cat apps/flights-generator/.env
+# Begin uploading synthetic data to
+make generate_flights
 ```
 
 ### Running pipeline with Meltano

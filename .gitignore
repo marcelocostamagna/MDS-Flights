@@ -4,3 +4,4 @@
 /minio
 output/
 data/db/
+/logs/meltano.log

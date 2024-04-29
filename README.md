@@ -63,7 +63,7 @@ export SRC_FILE=flights_1.csv
 ```bash
 # Edit .env file and define object storage credentials
 cat apps/flights-generator/.env
-# Begin uploading synthetic data to
+# Begin uploading synthetic data to a specific bucket
 make generate_flights
 ```
 
@@ -115,6 +115,9 @@ sudo duckdb data/db/flights.db "SELECT database_name, schema_name, table_name, e
 # List raw files ingested
 sudo duckdb data/db/flights.db "SELECT DISTINCT _sdc_source_file FROM flights_raw;"
 ```
+
+## Visualizing logs
+The `meltano.log` file is placed under *logs/* folder
 
 ## Utils
 ```bash

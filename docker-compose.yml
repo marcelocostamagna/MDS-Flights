@@ -9,85 +9,90 @@ x-logging: &logging
     max-size: "5m"
     max-file: "10"
 
-version: '3'
+version: "3"
 
 services:
-    meltano:
-      build:
-        context: .
-        dockerfile: dockerfiles/Dockerfile_meltano
-      image: meltano-dev
-      networks:
-        - meltano_network
-    
-    streamlit:
-      build:
-        context: .
-        dockerfile: dockerfiles/Dockerfile_streamlit
-      image: streamlit-dev
-      ports:
-        - 8501:8501
-      command : streamlit run code/streamlit_app.py --server.port=8501 --server.address=0.0.0.0
-      volumes:
-        - .apps/streamlit:/app/code
-        - ./data/db:/app/db
-      healthcheck:
-        test: ["CMD", "curl", "--fail", "http://localhost:8501/_stcore/health"]
-      networks:
-        - meltano_network
-    
-    minio:
-      image: minio/minio:latest
-      restart: unless-stopped
-      ports:
-        - 9090:9000 # 9000 internal docker network
-        - 9091:9001 # UI 9091 external access
-      environment:
-        MINIO_ROOT_USER: minio
-        MINIO_ROOT_PASSWORD: minio123
-        TZ: UTC
-      volumes:
-        - ./minio/data:/data
-      logging: *logging
-      healthcheck:
-        test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
-        interval: 30s
-        timeout: 20s
-        retries: 3
-      command: minio server /data --console-address ":9001"
-      networks:
-        - meltano_network
-    
-    createbuckets:
-      image: minio/mc
-      depends_on:
-        - minio
-      entrypoint: >
-        /bin/sh -c "
-        /usr/bin/mc alias set myminio http://minio:9000 minio minio123;
-        /usr/bin/mc mb myminio/landing;
-        /usr/bin/mc mb myminio/bronze;
-        /usr/bin/mc anonymous set public myminio/landing;
-        /usr/bin/mc anonymous set public myminio/bronze;
-        /usr/bin/mc cp /tmp/flights_1.csv myminio/landing/flights_1.csv;
-        exit 0;
-        "
-      volumes:
-        - type: bind
-          source: ./data/raw/flights_1.csv
-          target: /tmp/flights_1.csv
-      networks:
-        - meltano_network
+  meltano:
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile_meltano
+    image: meltano-dev
+    container_name: mds-meltano-dev
+    networks:
+      - meltano_network
 
-    flights_generator:
-      build:
-        context: .
-        dockerfile: dockerfiles/Dockerfile_flights_generator
-      image: flights-data-generator
-      networks:
-        - meltano_network
+  streamlit:
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile_streamlit
+    image: streamlit-dev
+    container_name: mds-streamlit
+    ports:
+      - 8501:8501
+    command: streamlit run code/streamlit_app.py --server.port=8501 --server.address=0.0.0.0
+    volumes:
+      - ./apps/streamlit:/app/code
+      - ./data/db:/app/db
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8501/_stcore/health"]
+    networks:
+      - meltano_network
+
+  minio:
+    image: minio/minio:latest
+    container_name: mds-minio
+    restart: unless-stopped
+    ports:
+      - 9090:9000 # 9000 internal docker network
+      - 9091:9001 # UI 9091 external access
+    environment:
+      MINIO_ROOT_USER: minio
+      MINIO_ROOT_PASSWORD: minio123
+      TZ: UTC
+    volumes:
+      - ./minio/data:/data
+    logging: *logging
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    command: minio server /data --console-address ":9001"
+    networks:
+      - meltano_network
+
+  create_buckets:
+    image: minio/mc
+    container_name: mds-create-buckets
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/mc alias set myminio http://minio:9000 minio minio123;
+      /usr/bin/mc mb myminio/landing;
+      /usr/bin/mc mb myminio/bronze;
+      /usr/bin/mc anonymous set public myminio/landing;
+      /usr/bin/mc anonymous set public myminio/bronze;
+      /usr/bin/mc cp /tmp/flights_1.csv myminio/landing/flights_1.csv;
+      exit 0;
+      "
+    volumes:
+      - type: bind
+        source: ./data/raw/flights_1.csv
+        target: /tmp/flights_1.csv
+    networks:
+      - meltano_network
+
+  flights_generator:
+    build:
+      context: .
+      dockerfile: dockerfiles/Dockerfile_flights_generator
+    image: flights-data-generator
+    container_name: mds-flights-generator
+    networks:
+      - meltano_network
 
 networks:
-        meltano_network:
-          driver: bridge
-          name: meltano_network
+  meltano_network:
+    driver: bridge
+    name: meltano_network

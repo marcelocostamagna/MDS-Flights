@@ -24,7 +24,7 @@ run_docker:
 	-e MINIO_REGION=${MINIO_REGION} \
 	-v $(shell pwd)/.env:/project/.env \
 	-v $(shell pwd)/data/db:/project/data/db \
-	-v $(shell pwd)/logs:/project/.meltano/logs/elt \
+	-v $(shell pwd)/logs:/project/logs \
 	--entrypoint "/project/entrypoint.sh" \
 	meltano
 
@@ -38,7 +38,7 @@ run_aws:
 	-e AWS_REGION=${AWS_REGION} \
 	-v $(shell pwd)/.env:/project/.env \
 	-v $(shell pwd)/data/db:/project/data/db \
-	-v $(shell pwd)/logs:/project/.meltano/logs/elt \
+	-v $(shell pwd)/logs:/project/logs \
 	--entrypoint "/project/entrypoint.sh" \
 	meltano
 
